@@ -2,22 +2,29 @@ import React from 'react'
 import { useState } from 'react'
 import { deleteDoc,doc ,db,collection,getDocs, auth} from '../firebase-config'
 import { useEffect } from 'react'
-import {CiEdit} from 'react-icons/ci';
 import {useSelector} from 'react-redux';
+import toast from 'react-hot-toast';
+import { Card,Col,Row,Button, Space,Tooltip } from 'antd';
+import {DeleteOutlined,EditOutlined} from '@ant-design/icons'
 
 export default function Home() {
-    const isAuth = useSelector((state) => state.auth.value)
-const [users,setUsers] = useState([]) 
+    const userdata = useSelector((state) => state.auth.value)
+const [users,setUsers] = useState([{
+  title:'Tinitin a software di impaginazione come Aldus PageMake',
+  message:'Lorem ipsium',author:{name:'Hadija',email:'hakjd@gmail.com'}},
+{
+  title:'Tinitin a software di impaginazione come Aldus PageMake',
+  message:'Lorem ipsium',author:{name:'Hadija',email:'hakjd@gmail.com'}}]) 
 const usercollectionref = collection(db, "posts")
 const deleteUser = async(id)=> {
   const user = doc(db,"posts",id)
-
+ // {userdata.isauth&&(auth?.currentUser.displayName == userdata?.name)?():""}
   await deleteDoc(user)
 }
   useEffect(()=>{
     const getusers = async()=> {
       const data = await getDocs(usercollectionref)
-      setUsers(data.docs.map((doc) => ({...doc.data(),id:doc.id})))
+    //  setUsers(data.docs.map((doc) => ({...doc.data(),id:doc.id})))
     }
     getusers()
   },[deleteUser])
@@ -25,26 +32,58 @@ const deleteUser = async(id)=> {
  
   return (
     <>
-   <div className='card'>
-   {users.map((user)=>{
-      return (
-        <div key={user.id} className="">
-            <h2>{user.title}</h2>
-            <div className=''>
-                <p>{user.message}</p>
-                {isAuth&&(auth?.currentUser.displayName == user?.author?.name)?
-                (<div>
-                <button className='bnt' onClick={()=>deleteUser(user.id)}>&#128465;</button>
-                <button className='bnt1'><CiEdit size={21}/></button>
-                </div>):""}
-            </div>
-            <p>@{user?.author?.name}</p>
-        </div>
-      )
-        })
-    }
-   </div>
-   
+      <Space
+      direction="vertical"
+      size="middle"     
+        style={{
+          display: 'flex',
+          justifyContent:'start',
+          alignItems:'center',
+          minHeight:'90vh'
+        }}
+      >
+        {users.map((user)=> {
+        return(
+        
+          <Card
+       
+            title={
+              <Space    direction="row" wrap size='small'
+              style={{
+                display: 'flex',
+                justifyContent:'space-between'
+              }}
+              >
+                  <p wrap>{user.title}</p>
+              <Space direction='row' size='small' >
+              <Tooltip title="Delete" >
+                 <Button type="primary" shape="circle" onClick={()=>deleteUser(user.id)} icon={ <DeleteOutlined />} />
+               </Tooltip>
+               <Tooltip title="Edit">
+                 <Button  type="primary" shape="circle"  icon={ <EditOutlined />} />
+               </Tooltip>
+              </Space>
+              </Space>
+            }
+            direction="vertical"
+           
+            style={{
+              display: 'flex',
+              flexDirection:'column',
+              justifyContent:'center',
+              width: '90vw',
+
+            }}
+          >
+             <div>
+             <p>{user.message}</p>
+              <p>@{user?.author?.name}</p>
+             </div>
+          </Card>
+      
+        )
+        })}
+     </Space>
     </>
 
   )

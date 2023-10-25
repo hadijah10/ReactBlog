@@ -1,13 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit'
 //localStorage.getItem("name")
-const initialStateValue = false
+const initialStateValue = {isauth:false,name:null,email:null,navi:[{name:'Home',key:0},{name:'Login',key:1}]}
 
 export const authSlice = createSlice({
   name: 'auth',
   initialState:{value:initialStateValue},
   reducers: {
-    login: (state) => {
-        state.value = true
+    login: (state,action) => {
+        state.value = action.payload;
     },
    logout:(state) => {
     state.value = initialStateValue
