@@ -58,10 +58,10 @@ function RootLayout(){
           mode="horizontal"
          defaultSelectedKeys={[pathkey]}
           items={isAuth.navi.map((element) => {
-            const key = element.name.toLocaleLowerCase()
+            const key = element.toLocaleLowerCase()
             return {
               key,
-              label: element.name,
+              label: element,
             };
           })}
         />

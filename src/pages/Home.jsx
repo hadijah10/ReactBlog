@@ -4,8 +4,9 @@ import { deleteDoc,doc ,db,collection,getDocs, auth} from '../firebase-config'
 import { useEffect } from 'react'
 import {useSelector} from 'react-redux';
 import toast from 'react-hot-toast';
-import { Card,Col,Row,Button, Space,Tooltip } from 'antd';
+import { Card,Typography,Button, Space,Tooltip } from 'antd';
 import {DeleteOutlined,EditOutlined} from '@ant-design/icons'
+const {Title} = Typography
 
 export default function Home() {
     const userdata = useSelector((state) => state.auth.value)
@@ -18,13 +19,13 @@ const [users,setUsers] = useState([{
 const usercollectionref = collection(db, "posts")
 const deleteUser = async(id)=> {
   const user = doc(db,"posts",id)
- // {userdata.isauth&&(auth?.currentUser.displayName == userdata?.name)?():""}
+ // 
   await deleteDoc(user)
 }
   useEffect(()=>{
     const getusers = async()=> {
       const data = await getDocs(usercollectionref)
-    //  setUsers(data.docs.map((doc) => ({...doc.data(),id:doc.id})))
+     setUsers(data.docs.map((doc) => ({...doc.data(),id:doc.id})))
     }
     getusers()
   },[deleteUser])
@@ -46,7 +47,7 @@ const deleteUser = async(id)=> {
         return(
         
           <Card
-       
+            key={user.id}
             title={
               <Space    direction="row" wrap size='small'
               style={{
@@ -54,15 +55,18 @@ const deleteUser = async(id)=> {
                 justifyContent:'space-between'
               }}
               >
-                  <p wrap>{user.title}</p>
-              <Space direction='row' size='small' >
-              <Tooltip title="Delete" >
-                 <Button type="primary" shape="circle" onClick={()=>deleteUser(user.id)} icon={ <DeleteOutlined />} />
-               </Tooltip>
-               <Tooltip title="Edit">
-                 <Button  type="primary" shape="circle"  icon={ <EditOutlined />} />
-               </Tooltip>
-              </Space>
+                  <Title level={3} wrap>{user.title}</Title>
+                  {userdata.isauth&&(auth?.currentUser.displayName == userdata?.name)&&(
+                     <Space direction='row' size='small' >
+                     <Tooltip title="Delete" >
+                       <Button type="primary" shape="circle" onClick={()=>deleteUser(user.id)} icon={ <DeleteOutlined />} />
+                     </Tooltip>
+                     <Tooltip title="Edit">
+                       <Button  type="primary" shape="circle"  icon={ <EditOutlined />} />
+                     </Tooltip>
+                   </Space>
+                  )}
+             
               </Space>
             }
             direction="vertical"

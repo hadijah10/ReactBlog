@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 //localStorage.getItem("name")
-const initialStateValue = {isauth:false,name:null,email:null,navi:[{name:'Home',key:0},{name:'Login',key:1}]}
+const initialStateValue = {isauth:false,name:null,email:null,navi:['Home','Login']}
 
 export const authSlice = createSlice({
   name: 'auth',

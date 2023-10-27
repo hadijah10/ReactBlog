@@ -21,7 +21,7 @@ function Login(){
             //localStorage.setItem("name",name)
            // localStorage.setItem("email",email)
           //  Cookies.set('ck03', 'v103', { sameSite: 'none' } )
-            dispatch(login({isauth:true,name:result.user.displayName,email:result.user.displayEmail,navi:[{name:'Home',key:0},{name:'Post',key:1},{name:'Logout',key:2}]}));
+            dispatch(login({isauth:true,name:result.user.displayName,email:result.user.displayEmail,navi:['Home','Post','Logout']}));
          navigate('/home',{replace:true})
 
         }

@@ -4,35 +4,87 @@ import classes from './Post.module.css'
 import {db,addDoc,collection} from '../firebase-config';
 import { auth } from '../firebase-config';
 import toast from 'react-hot-toast';
+import { Button, Input, Form,Typography } from 'antd';
+const { TextArea } = Input;
+const {Title} = Typography
+
+
 function Post(){
-    const [title,setTitle] = useState('')
-    const [message,setMessage] = useState('')
+    const [form] = Form.useForm();
+    const title = Form.useWatch("title",form)
+    const message = Form.useWatch("blog",form)
+    
     const docAdd = async() => {
         try{
-            await addDoc(collection(db,"posts"),{title,message,author:{name:auth.currentUser.displayName,id:auth.currentUser.uid}})
+            await addDoc(collection(db,"posts"),{title:title,message:message,author:{name:auth.currentUser.displayName,id:auth.currentUser.uid}})
        toast.success("Post added!")
-            setTitle('')
-            setMessage('')
+         form.resetFields()
         }catch(err){
         toast.error("Post not added")
-        setTitle('')
-        setMessage('')
         }
     }
  
-    return(
-        <>
-       <div className={classes.post}>
-       <form action="POST" onSubmit={docAdd} className={classes.form}>
-            <h3>Create Blog</h3>
-            <label htmlFor="title">Title</label>
-            <input type="text" id="title" onChange={(e) => setTitle(e.target.value)} placeholder='Title' />
-            <label htmlFor="message">Post</label>
-            <textarea name="post" id="message" onChange={(e) => setMessage(e.target.value)} rows="10"></textarea>
-        </form>
-        <button onClick={docAdd} type='submit' className={classes.btn}>Post</button>       
-       </div>
-        </>
-    );
+  return(
+    <>
+      <Form
+        form = {form}
+        style={{
+          maxWidth: 600,
+          border:"1px solid whitesmoke",
+          margin:'0 auto',
+          display:'flex',
+          flexDirection:'column',
+          justifyContent:'center',
+          alignItems:'center',
+          background:'white',
+          gap:'20px'
+        }}
+        initialValues={{
+          remember: true,
+        }}
+        onFinish={docAdd}
+      
+        autoComplete="off"
+      >
+        <Title level={3}>h3. Ant Design</Title>
+        <Form.Item
+          label="Title"
+          name={"title"}
+          rules={[
+            {
+              required: true,
+              message: 'Please input the title!',
+            },
+          ]}
+          wrapperCol={{
+            offset: 0,
+          }}
+          style={{width:'80%'}}
+        >
+        <Input placeholder="Blog title" />
+        </Form.Item>
+        <Form.Item label="Blog"
+        name={"blog"}
+        rules={[
+            {
+              required: true,
+              message: 'Please input your post!',
+            },
+          ]}
+        wrapperCol={{
+            offset: 0,
+            
+          }}
+          style={{width:'80%'}}>
+              <TextArea rows={8} />
+        </Form.Item>
+        <Form.Item>
+        <Button type="primary" htmlType="submit">
+            Post
+          </Button>
+        </Form.Item>
+      </Form>
+    </>
+  );
 }
 export default Post;
