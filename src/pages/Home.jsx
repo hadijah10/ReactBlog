@@ -1,51 +1,65 @@
-import React from 'react'
-import { useState } from 'react'
-import { deleteDoc,doc ,db,collection,getDocs, auth} from '../firebase-config'
-import { useEffect } from 'react'
-import {CiEdit} from 'react-icons/ci';
-import {useSelector} from 'react-redux';
+import React from "react";
+import { useState } from "react";
+import {
+  deleteDoc,
+  doc,
+  db,
+  collection,
+  getDocs,
+  auth,
+} from "../firebase-config";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { Card, Typography, Button, Space, Tooltip } from "antd";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { PostCard } from "../component/PostCard";
+import { fetchUsers, selectUsers } from "../redux/users";
+const { Title } = Typography;
 
 export default function Home() {
-    const isAuth = useSelector((state) => state.auth.value)
-const [users,setUsers] = useState([]) 
-const usercollectionref = collection(db, "posts")
-const deleteUser = async(id)=> {
-  const user = doc(db,"posts",id)
+  const dispatch = useDispatch();
+  const { users, isLoading, error } = useSelector(selectUsers);
+  console.log("error", error)
+  console.log("users", users)
+  // const [users, setUsers] = useState([
+  //   {
+  //     title: "Tinitin a software di impaginazione come Aldus PageMake",
+  //     message: "Lorem ipsium",
+  //     author: { name: "Hadija", email: "hakjd@gmail.com" },
+  //   },
+  //   {
+  //     title: "Tinitin a software di impaginazione come Aldus PageMake",
+  //     message: "Lorem ipsium",
+  //     author: { name: "Hadija", email: "hakjd@gmail.com" },
+  //   },
+  // ]);
 
-  await deleteDoc(user)
-}
-  useEffect(()=>{
-    const getusers = async()=> {
-      const data = await getDocs(usercollectionref)
-      setUsers(data.docs.map((doc) => ({...doc.data(),id:doc.id})))
-    }
-    getusers()
-  },[deleteUser])
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
 
- 
   return (
     <>
-   <div className='card'>
-   {users.map((user)=>{
-      return (
-        <div key={user.id} className="">
-            <h2>{user.title}</h2>
-            <div className=''>
-                <p>{user.message}</p>
-                {isAuth&&(auth?.currentUser.displayName == user?.author?.name)?
-                (<div>
-                <button className='bnt' onClick={()=>deleteUser(user.id)}>&#128465;</button>
-                <button className='bnt1'><CiEdit size={21}/></button>
-                </div>):""}
-            </div>
-            <p>@{user?.author?.name}</p>
-        </div>
-      )
-        })
-    }
-   </div>
-   
+      <Space
+        direction="vertical"
+        size="middle"
+        style={{
+          display: "flex",
+          justifyContent: "start",
+          alignItems: "center",
+          minHeight: "90vh",
+        }}
+      >
+        {isLoading ? (
+          <Typography>Loading...</Typography>
+        ) : (
+          users?.map((user) => {
+            return <PostCard user={user} key={user.id} />;
+          })
+        )}
+        {error && <Typography>An error occurred</Typography>}
+      </Space>
     </>
-
-  )
+  );
 }
